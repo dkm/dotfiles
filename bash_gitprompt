@@ -47,18 +47,25 @@ function git_dirty_flag {
 
 function prompt_func() {
     previous_return_value=$?;
-    #The lowercase w is the full current working directory
-    prompt="${TITLEBAR}\u@\h ${BLUE}[${RED} \w ${GREEN}$(parse_git_branch)${BLUE}]${COLOR_NONE}"
+
+    if ! (stat -f $PWD | grep -q fuseblk); then
+	#The lowercase w is the full current working directory
+	prompt="${TITLEBAR}\u@\h ${BLUE}[${RED} \w ${GREEN}$(parse_git_branch)${BLUE}]${COLOR_NONE}"
     
-    #Capital W is just the trailing part of the current working directory
-    #prompt="${TITLEBAR}${BLUE}[${RED}\W${GREEN}$(parse_git_branch)${BLUE}]${COLOR_NONE}"
+	#Capital W is just the trailing part of the current working directory
+	#prompt="${TITLEBAR}${BLUE}[${RED}\W${GREEN}$(parse_git_branch)${BLUE}]${COLOR_NONE}"
     
+    else
+	prompt="${TITLEBAR}\u@\h ${BLUE}[${RED} \w ${GREEN}(/sshfs=>nogit/)${BLUE}]${COLOR_NONE}"
+    fi
+
     if test $previous_return_value -eq 0
     then
         PS1="${prompt}\n:) > "
     else
         PS1="${prompt}\n${RED}:( >${COLOR_NONE} "
     fi
+
 }
 
 PROMPT_COMMAND=prompt_func
